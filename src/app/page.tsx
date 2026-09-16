@@ -29,8 +29,8 @@ export default function Home() {
         {/* HERO HEADER */}
         <Hero />
 
-        {/* SPORTS GRID SECTION — Clean & Simple Mobile Cards */}
-        <section id="sports" className="py-16 sm:py-24 bg-white text-[#0f172a]">
+        {/* SPORTS GRID SECTION — Inter-Department Tournament (Hidden on phones, shown on laptop) */}
+        <section id="sports" className="hidden sm:block py-16 sm:py-24 bg-white text-[#0f172a]">
           <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
               <div>

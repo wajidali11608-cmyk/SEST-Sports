@@ -25,11 +25,10 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isDarkNav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isDarkNav
           ? "bg-[#03120c]/95 backdrop-blur-md border-b-2 border-emerald-500/20"
           : "bg-white/95 backdrop-blur-xl border-b-2 border-gray-900"
-      }`}
+        }`}
     >
       <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12">
         <div className="flex items-center justify-between h-[76px] sm:h-[84px]">
