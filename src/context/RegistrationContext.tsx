@@ -81,9 +81,61 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     size: "2.4 MB",
   });
   
-  // Global registrations store
-  const [registrations, setRegistrations] = useState<Registration[]>(INITIAL_REGISTRATIONS);
+  // Global registrations store with localStorage persistence & real-time sync
+  const [registrations, setRegistrations] = useState<Registration[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("sest_registrations");
+        if (saved) {
+          return JSON.parse(saved);
+        }
+      } catch (e) {
+        console.error("Failed to load registrations from localStorage", e);
+      }
+    }
+    return INITIAL_REGISTRATIONS;
+  });
   const [currentRegistrationId, setCurrentRegistrationId] = useState<string | null>("C-027");
+
+  // Helper to persist to localStorage and broadcast real-time sync event
+  const saveRegistrations = (updater: Registration[] | ((prev: Registration[]) => Registration[])) => {
+    setRegistrations((prev) => {
+      const nextRegs = typeof updater === "function" ? updater(prev) : updater;
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem("sest_registrations", JSON.stringify(nextRegs));
+          window.dispatchEvent(new CustomEvent("sest_registration_updated"));
+        } catch (e) {
+          console.error("Failed to save registrations to localStorage", e);
+        }
+      }
+      return nextRegs;
+    });
+  };
+
+  // Sync state when localStorage changes across tabs or via custom event
+  useEffect(() => {
+    const syncFromStorage = () => {
+      if (typeof window !== "undefined") {
+        try {
+          const saved = localStorage.getItem("sest_registrations");
+          if (saved) {
+            setRegistrations(JSON.parse(saved));
+          }
+        } catch (e) {
+          console.error("Failed to sync registrations from storage", e);
+        }
+      }
+    };
+
+    window.addEventListener("storage", syncFromStorage);
+    window.addEventListener("sest_registration_updated", syncFromStorage);
+
+    return () => {
+      window.removeEventListener("storage", syncFromStorage);
+      window.removeEventListener("sest_registration_updated", syncFromStorage);
+    };
+  }, []);
 
   const selectedSport = SPORTS.find((s) => s.id === selectedSportId) || SPORTS[0];
 
@@ -146,7 +198,7 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       createdAt: new Date().toISOString().split("T")[0],
     };
 
-    setRegistrations((prev) => [newReg, ...prev]);
+    saveRegistrations((prev) => [newReg, ...prev]);
     setCurrentRegistrationId(newId);
 
     // Send payload to Google Sheets Web App if configured
@@ -186,13 +238,13 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   const approveRegistration = (id: string) => {
-    setRegistrations((prev) =>
+    saveRegistrations((prev) =>
       prev.map((r) => (r.id === id ? { ...r, status: "Confirmed" } : r))
     );
   };
 
   const rejectRegistration = (id: string) => {
-    setRegistrations((prev) =>
+    saveRegistrations((prev) =>
       prev.map((r) => (r.id === id ? { ...r, status: "Rejected" } : r))
     );
   };
