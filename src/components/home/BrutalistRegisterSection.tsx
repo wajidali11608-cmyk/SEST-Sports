@@ -955,24 +955,12 @@ export const BrutalistRegisterSection: React.FC = () => {
                     <div className="bg-white p-3 border-3 border-emerald-400 w-fit mx-auto mb-4 shadow-md">
                       <div className="relative w-44 h-44 sm:w-52 sm:h-52 overflow-hidden">
                         <Image
-                          src="/images/sest-upi-qr.jpg"
-                          alt="SEST Official UPI Payment QR Code"
+                          src="/images/Qr.jpeg"
+                          alt="SEST Official Payment QR Code"
                           fill
                           className="object-contain"
                         />
                       </div>
-                    </div>
-
-                    <div className="text-center font-mono space-y-1 mb-4">
-                      <span className="text-[10px] text-gray-400 uppercase font-bold block">
-                        Official UPI ID
-                      </span>
-                      <span className="text-sm sm:text-base font-black text-emerald-400 tracking-wide block">
-                        7006863828@okbizaxis
-                      </span>
-                      <span className="text-[10px] text-gray-300 block font-medium">
-                        Name: SEST SPORTS WEEK JAMIA HAMDARD
-                      </span>
                     </div>
                   </div>
 
