@@ -99,7 +99,7 @@ export default function Home() {
           <div className="absolute -top-40 -right-40 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12 relative z-10">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center mb-16">
               {/* Left Column: Jamia Hamdard SEST Crest & Event Specs */}
               <div className="lg:col-span-5 bg-[#064e3b] p-6 sm:p-10 border-4 border-white shadow-[10px_10px_0px_0px_#10b981] relative">
                 <div className="flex items-center gap-4 mb-8 pb-6 border-b-2 border-emerald-400/40">
@@ -112,9 +112,6 @@ export default function Home() {
                     />
                   </div>
                   <div>
-                    <span className="text-[10px] font-mono font-black text-emerald-300 uppercase tracking-widest block mb-0.5">
-                      School of Engineering
-                    </span>
                     <h3
                       className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight leading-none"
                       style={{ fontFamily: "'Space Grotesk', sans-serif" }}
@@ -195,3 +192,5 @@ export default function Home() {
     </div>
   );
 }
+
+
