@@ -32,23 +32,23 @@ export const Hero: React.FC = () => {
       {/* CONTINUOUS MARQUEE TICKER RIBBON */}
       <div className="relative z-20 bg-emerald-500 text-[#0f172a] py-2 border-y-3 border-[#0f172a] font-mono font-black text-xs uppercase tracking-widest overflow-hidden shadow-md">
         <div className="whitespace-nowrap flex gap-8 animate-marquee">
-          <span>🏆 SEST SPORTS WEEK 2026</span>
+          <span>SEST SPORTS WEEK 2026</span>
           <span>•</span>
-          <span>📅 DATES: 5 TO 7 OCTOBER 2026</span>
+          <span>DATES: 5 TO 7 OCTOBER 2026</span>
           <span>•</span>
-          <span>📍 VENUE: SPORTS COMPLEX</span>
+          <span>VENUE: SPORTS COMPLEX</span>
           <span>•</span>
-          <span>⚡ REGISTRATION OPEN NOW FOR ALL SEST STUDENTS</span>
+          <span>REGISTRATION OPEN NOW FOR ALL SEST STUDENTS</span>
           <span>•</span>
           <span>JAMIA HAMDARD NEW DELHI</span>
           <span>•</span>
-          <span>🏆 SEST SPORTS WEEK 2026</span>
+          <span>SEST SPORTS WEEK 2026</span>
           <span>•</span>
-          <span>📅 DATES: 5 TO 7 OCTOBER 2026</span>
+          <span>DATES: 5 TO 7 OCTOBER 2026</span>
           <span>•</span>
-          <span>📍 VENUE: SPORTS COMPLEX</span>
+          <span>VENUE: SPORTS COMPLEX</span>
           <span>•</span>
-          <span>⚡ REGISTRATION OPEN NOW FOR ALL SEST STUDENTS</span>
+          <span>REGISTRATION OPEN NOW FOR ALL SEST STUDENTS</span>
           <span>•</span>
         </div>
       </div>
