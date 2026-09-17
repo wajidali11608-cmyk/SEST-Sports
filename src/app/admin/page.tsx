@@ -20,10 +20,11 @@ import {
   TrendingUp,
   Menu,
   X,
+  RefreshCw,
 } from "lucide-react";
 
 export default function AdminDashboardPage() {
-  const { registrations, approveRegistration, rejectRegistration } = useRegistration();
+  const { registrations, approveRegistration, rejectRegistration, isLoadingFromSheets, lastSyncedAt, syncWithGoogleSheets } = useRegistration();
 
   // Password Protection State
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -248,13 +249,23 @@ export default function AdminDashboardPage() {
                 <span>Jamia Hamdard Organizers Control Panel</span>
                 <span className="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-900 text-[10px] px-2 py-0.5 border border-emerald-400 font-mono font-black">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  Live Auto-Sync
+                  {isLoadingFromSheets ? "Syncing..." : lastSyncedAt ? `Synced at ${lastSyncedAt}` : "Live Connected"}
                 </span>
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => syncWithGoogleSheets()}
+              disabled={isLoadingFromSheets}
+              className="px-5 py-3 bg-[#03120c] hover:bg-emerald-700 text-emerald-400 font-black text-xs uppercase tracking-wider shadow-[4px_4px_0px_0px_#10b981] border-2 border-[#03120c] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+            >
+              <RefreshCw className={`w-4 h-4 ${isLoadingFromSheets ? "animate-spin" : ""}`} />
+              <span>{isLoadingFromSheets ? "Fetching Sheets..." : "Sync Google Sheets"}</span>
+            </button>
+
             <button
               onClick={handleExportCSV}
               className="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-[#03120c] font-black text-xs uppercase tracking-wider shadow-[4px_4px_0px_0px_#03120c] border-2 border-[#03120c] transition-all flex items-center justify-center gap-2"

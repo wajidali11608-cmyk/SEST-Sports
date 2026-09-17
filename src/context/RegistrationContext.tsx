@@ -33,6 +33,8 @@ interface RegistrationContextType {
   // Submitted Registrations List
   registrations: Registration[];
   currentRegistrationId: string | null;
+  isLoadingFromSheets: boolean;
+  lastSyncedAt: string | null;
   
   // Actions
   submitRegistration: (customData?: {
@@ -51,6 +53,7 @@ interface RegistrationContextType {
   approveRegistration: (id: string) => void;
   rejectRegistration: (id: string, remarks?: string) => void;
   resetForm: () => void;
+  syncWithGoogleSheets: () => Promise<void>;
 }
 
 const RegistrationContext = createContext<RegistrationContextType | undefined>(undefined);
@@ -113,7 +116,132 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     });
   };
 
-  // Sync state when localStorage changes across tabs or via custom event
+  const [isLoadingFromSheets, setIsLoadingFromSheets] = useState<boolean>(false);
+  const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
+
+  // Helper parser for Google Sheet rows
+  const parseGoogleSheetRow = (row: Record<string, any>, index: number): Registration => {
+    const getVal = (...possibleKeys: string[]): any => {
+      for (const pKey of possibleKeys) {
+        if (row[pKey] !== undefined && row[pKey] !== null && row[pKey] !== "") {
+          return row[pKey];
+        }
+        const lowerP = pKey.toLowerCase();
+        const matchedKey = Object.keys(row).find((k) => k.toLowerCase().trim() === lowerP);
+        if (matchedKey && row[matchedKey] !== undefined && row[matchedKey] !== null && row[matchedKey] !== "") {
+          return row[matchedKey];
+        }
+      }
+      return undefined;
+    };
+
+    const id = String(getVal("id", "registration id", "registration_id") || `SEST-REG-${1000 + index}`);
+    const sportName = String(getVal("sportname", "sport name", "sport") || "Cricket");
+    const sportId = sportName.toLowerCase();
+    const teamName = String(getVal("teamname", "team name", "team") || "Team");
+    const captainName = String(getVal("captainname", "captain name", "captain") || "N/A");
+    const captainEnrollment = String(getVal("captainenrollment", "captain enrollment", "enrollment") || "N/A");
+    const captainMobile = String(getVal("captainmobile", "captain mobile", "mobile") || "N/A");
+
+    const rawPlayers = getVal("players", "players count", "players_count");
+    let playersList: Player[] = [];
+
+    if (Array.isArray(rawPlayers)) {
+      playersList = rawPlayers;
+    } else if (typeof rawPlayers === "string" && rawPlayers.trim().startsWith("[")) {
+      try {
+        playersList = JSON.parse(rawPlayers);
+      } catch {
+        // fallback
+      }
+    }
+
+    if (playersList.length === 0) {
+      if (typeof rawPlayers === "string" && rawPlayers.includes(",")) {
+        playersList = rawPlayers.split(",").map((pStr: string, i: number) => {
+          const cleanStr = pStr.trim();
+          const match = cleanStr.match(/^(.*?)(?:\s*\((.*?)\))?$/);
+          const name = match ? match[1].trim() : cleanStr;
+          const enrollmentNo = match && match[2] ? match[2].trim() : "N/A";
+          return {
+            id: `${id}-p${i + 1}`,
+            name: name || `Player ${i + 1}`,
+            enrollmentNo: enrollmentNo,
+            mobileNo: i === 0 ? captainMobile : "N/A",
+          };
+        });
+      } else {
+        const count = parseInt(String(rawPlayers)) || 1;
+        playersList = Array.from({ length: count }, (_, i) => ({
+          id: `${id}-p${i + 1}`,
+          name: i === 0 ? captainName : `Player ${i + 1}`,
+          enrollmentNo: i === 0 ? captainEnrollment : "N/A",
+          mobileNo: i === 0 ? captainMobile : "N/A",
+        }));
+      }
+    }
+
+    const amount = Number(getVal("amount", "amount paid", "amount_paid")) || playersList.length * 150;
+    const screenshotName = String(getVal("screenshotname", "utr number", "screenshot", "utr") || "Verified Image");
+    const statusRaw = String(getVal("status") || "Confirmed");
+    const status: "Confirmed" | "Pending" | "Rejected" =
+      statusRaw.toLowerCase().includes("pend") ? "Pending" : statusRaw.toLowerCase().includes("reject") ? "Rejected" : "Confirmed";
+    const createdAt = String(getVal("createdat", "created at", "timestamp") || new Date().toISOString().split("T")[0]);
+
+    return {
+      id,
+      sportId,
+      sportName,
+      teamName,
+      captainName,
+      captainEnrollment,
+      captainMobile,
+      players: playersList,
+      amount,
+      utr: "Verified",
+      screenshotName,
+      screenshotSize: "Verified Image",
+      status,
+      createdAt,
+    };
+  };
+
+  const syncWithGoogleSheets = async () => {
+    const sheetsUrl = process.env.NEXT_PUBLIC_GOOGLE_SHEETS_URL;
+    if (!sheetsUrl) return;
+
+    setIsLoadingFromSheets(true);
+    try {
+      const response = await fetch(sheetsUrl);
+      if (response.ok) {
+        const remoteData = await response.json();
+        if (Array.isArray(remoteData) && remoteData.length > 0) {
+          const parsedRemoteRegs: Registration[] = remoteData.map((row: any, idx: number) => parseGoogleSheetRow(row, idx));
+
+          saveRegistrations((prevLocal) => {
+            const combinedMap = new Map<string, Registration>();
+            // Add existing local ones
+            prevLocal.forEach((reg) => {
+              if (reg.id) combinedMap.set(reg.id, reg);
+            });
+            // Add or overwrite with remote ones from Google Sheets
+            parsedRemoteRegs.forEach((reg) => {
+              if (reg.id) combinedMap.set(reg.id, reg);
+            });
+            return Array.from(combinedMap.values());
+          });
+
+          setLastSyncedAt(new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true }));
+        }
+      }
+    } catch (err) {
+      console.error("Error syncing registrations from Google Sheets:", err);
+    } finally {
+      setIsLoadingFromSheets(false);
+    }
+  };
+
+  // Sync state when localStorage changes across tabs or via custom event & auto fetch from Sheets
   useEffect(() => {
     const syncFromStorage = () => {
       if (typeof window !== "undefined") {
@@ -130,6 +258,9 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
     window.addEventListener("storage", syncFromStorage);
     window.addEventListener("sest_registration_updated", syncFromStorage);
+
+    // Initial sync from Google Sheets
+    syncWithGoogleSheets();
 
     return () => {
       window.removeEventListener("storage", syncFromStorage);
@@ -291,11 +422,14 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         setPaymentScreenshot,
         registrations,
         currentRegistrationId,
+        isLoadingFromSheets,
+        lastSyncedAt,
         submitRegistration,
         getRegistrationById,
         approveRegistration,
         rejectRegistration,
         resetForm,
+        syncWithGoogleSheets,
       }}
     >
       {children}
