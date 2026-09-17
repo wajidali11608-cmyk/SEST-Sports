@@ -123,25 +123,29 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const parseGoogleSheetRow = (row: Record<string, any>, index: number): Registration => {
     const getVal = (...possibleKeys: string[]): any => {
       for (const pKey of possibleKeys) {
-        if (row[pKey] !== undefined && row[pKey] !== null && row[pKey] !== "") {
-          return row[pKey];
-        }
-        const lowerP = pKey.toLowerCase();
-        const matchedKey = Object.keys(row).find((k) => k.toLowerCase().trim() === lowerP);
-        if (matchedKey && row[matchedKey] !== undefined && row[matchedKey] !== null && row[matchedKey] !== "") {
+        const cleanP = pKey.toLowerCase().replace(/[^a-z0-9]/g, "");
+        const matchedKey = Object.keys(row).find(
+          (k) => k.toLowerCase().replace(/[^a-z0-9]/g, "") === cleanP
+        );
+        if (
+          matchedKey &&
+          row[matchedKey] !== undefined &&
+          row[matchedKey] !== null &&
+          String(row[matchedKey]).trim() !== ""
+        ) {
           return row[matchedKey];
         }
       }
       return undefined;
     };
 
-    const id = String(getVal("id", "registration id", "registration_id") || `SEST-REG-${1000 + index}`);
-    const sportName = String(getVal("sportname", "sport name", "sport") || "Cricket");
+    const id = String(getVal("id", "registration id", "registration_id") || `SEST-REG-${1000 + index}`).trim();
+    const sportName = String(getVal("sportname", "sport name", "sport") || "Cricket").trim();
     const sportId = sportName.toLowerCase();
-    const teamName = String(getVal("teamname", "team name", "team") || "Team");
-    const captainName = String(getVal("captainname", "captain name", "captain") || "N/A");
-    const captainEnrollment = String(getVal("captainenrollment", "captain enrollment", "enrollment") || "N/A");
-    const captainMobile = String(getVal("captainmobile", "captain mobile", "mobile") || "N/A");
+    const teamName = String(getVal("teamname", "team name", "team") || "Team").trim();
+    const captainName = String(getVal("captainname", "captain name", "captain") || "N/A").trim();
+    const captainEnrollment = String(getVal("captainenrollment", "captain enrollment", "enrollment") || "N/A").trim();
+    const captainMobile = String(getVal("captainmobile", "captain mobile", "mobile") || "N/A").trim();
 
     const rawPlayers = getVal("players", "players count", "players_count");
     let playersList: Player[] = [];
@@ -181,20 +185,26 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
     }
 
-    const rawAmount = getVal("amount", "amount paid", "amount_paid");
-    let amount = Number(rawAmount);
+    // Clean currency string e.g. "₹300" or "₹200" or "300"
+    const rawAmount = getVal("amount", "amount paid", "amount_paid", "fee", "fees");
+    const cleanedAmountStr = String(rawAmount || "").replace(/[^0-9.]/g, "");
+    let amount = Number(cleanedAmountStr);
+
     if (!rawAmount || isNaN(amount) || amount <= 0) {
-      if (sportName.toLowerCase().includes("badminton")) {
-        amount = playersList.length <= 1 ? 200 : 300;
+      const isBadminton = sportName.toLowerCase().includes("badminton");
+      if (isBadminton) {
+        const isSingles = sportName.toLowerCase().includes("singles") || playersList.length <= 1;
+        amount = isSingles ? 200 : 300;
       } else {
         amount = (playersList.length || 1) * 150;
       }
     }
-    const screenshotName = String(getVal("screenshotname", "utr number", "screenshot", "utr") || "Verified Image");
-    const statusRaw = String(getVal("status") || "Confirmed");
+
+    const screenshotName = String(getVal("paymentscreenshot", "screenshotname", "utr number", "screenshot", "utr") || "Verified Image").trim();
+    const statusRaw = String(getVal("status") || "Confirmed").trim();
     const status: "Confirmed" | "Pending" | "Rejected" =
       statusRaw.toLowerCase().includes("pend") ? "Pending" : statusRaw.toLowerCase().includes("reject") ? "Rejected" : "Confirmed";
-    const createdAt = String(getVal("createdat", "created at", "timestamp") || new Date().toISOString().split("T")[0]);
+    const createdAt = String(getVal("createdat", "created at", "timestamp") || new Date().toISOString().split("T")[0]).trim();
 
     return {
       id,
@@ -226,18 +236,7 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         if (Array.isArray(remoteData) && remoteData.length > 0) {
           const parsedRemoteRegs: Registration[] = remoteData.map((row: any, idx: number) => parseGoogleSheetRow(row, idx));
 
-          saveRegistrations((prevLocal) => {
-            const combinedMap = new Map<string, Registration>();
-            // Add existing local ones
-            prevLocal.forEach((reg) => {
-              if (reg.id) combinedMap.set(reg.id, reg);
-            });
-            // Add or overwrite with remote ones from Google Sheets
-            parsedRemoteRegs.forEach((reg) => {
-              if (reg.id) combinedMap.set(reg.id, reg);
-            });
-            return Array.from(combinedMap.values());
-          });
+          saveRegistrations(parsedRemoteRegs);
 
           setLastSyncedAt(new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true }));
         }
