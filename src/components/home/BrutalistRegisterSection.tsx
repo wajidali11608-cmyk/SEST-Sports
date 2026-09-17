@@ -126,16 +126,54 @@ export const BrutalistRegisterSection: React.FC = () => {
     setPlayers((prev) => prev.filter((p) => p.id !== id));
   };
 
-  // Mock File Upload Handler
+  // Image File Upload Handler with Canvas Base64 Compression
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const url = URL.createObjectURL(file);
-      setFileUploaded({
-        name: file.name,
-        size: `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
-        url,
-      });
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const rawDataUrl = event.target?.result as string;
+        const img = new window.Image();
+        img.src = rawDataUrl;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const MAX_WIDTH = 500;
+          const MAX_HEIGHT = 500;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx?.drawImage(img, 0, 0, width, height);
+          const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.6);
+
+          setFileUploaded({
+            name: file.name,
+            size: `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
+            url: compressedDataUrl,
+          });
+        };
+        img.onerror = () => {
+          setFileUploaded({
+            name: file.name,
+            size: `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
+            url: rawDataUrl,
+          });
+        };
+      };
+      reader.readAsDataURL(file);
     }
   };
 

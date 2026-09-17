@@ -205,7 +205,17 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
     }
 
-    const screenshotName = String(getVal("paymentscreenshot", "screenshotname", "utr number", "screenshot", "utr") || "Verified Image").trim();
+    const rawScreenshot = String(getVal("paymentscreenshot", "screenshotname", "screenshoturl", "screenshot", "utr") || "Verified Image").trim();
+    let screenshotName = "Payment Proof Attached";
+    let screenshotUrl: string | undefined = undefined;
+
+    if (rawScreenshot.startsWith("data:image/") || rawScreenshot.startsWith("http://") || rawScreenshot.startsWith("https://")) {
+      screenshotUrl = rawScreenshot;
+      screenshotName = "Payment Screenshot";
+    } else if (rawScreenshot && rawScreenshot !== "Verified Image") {
+      screenshotName = rawScreenshot;
+    }
+
     const statusRaw = String(getVal("status") || "Confirmed").trim();
     const status: "Confirmed" | "Pending" | "Rejected" =
       statusRaw.toLowerCase().includes("pend") ? "Pending" : statusRaw.toLowerCase().includes("reject") ? "Rejected" : "Confirmed";
@@ -224,6 +234,7 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       utr: "Verified",
       screenshotName,
       screenshotSize: "Verified Image",
+      screenshotUrl,
       status,
       createdAt,
     };

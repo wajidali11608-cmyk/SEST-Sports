@@ -94,14 +94,25 @@ export default function AdminDashboardPage() {
 
   // Filtered registrations
   const filteredRegs = registrations.filter((r) => {
+    const query = searchQuery.trim().toLowerCase();
     const matchesSearch =
-      r.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.teamName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.captainName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.captainEnrollment.toLowerCase().includes(searchQuery.toLowerCase());
+      !query ||
+      r.id.toLowerCase().includes(query) ||
+      r.teamName.toLowerCase().includes(query) ||
+      r.captainName.toLowerCase().includes(query) ||
+      r.captainEnrollment.toLowerCase().includes(query) ||
+      r.captainMobile.toLowerCase().includes(query) ||
+      r.sportName.toLowerCase().includes(query) ||
+      (r.screenshotName && r.screenshotName.toLowerCase().includes(query));
 
-    const matchesSport = sportFilter === "ALL" || r.sportId === sportFilter;
-    const matchesStatus = statusFilter === "ALL" || r.status === statusFilter;
+    const matchesSport =
+      sportFilter === "ALL" ||
+      r.sportId.toLowerCase().includes(sportFilter.toLowerCase()) ||
+      r.sportName.toLowerCase().includes(sportFilter.toLowerCase());
+
+    const matchesStatus =
+      statusFilter === "ALL" ||
+      r.status.toLowerCase() === statusFilter.toLowerCase();
 
     return matchesSearch && matchesSport && matchesStatus;
   });
