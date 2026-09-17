@@ -181,7 +181,15 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
     }
 
-    const amount = Number(getVal("amount", "amount paid", "amount_paid")) || playersList.length * 150;
+    const rawAmount = getVal("amount", "amount paid", "amount_paid");
+    let amount = Number(rawAmount);
+    if (!rawAmount || isNaN(amount) || amount <= 0) {
+      if (sportName.toLowerCase().includes("badminton")) {
+        amount = playersList.length <= 1 ? 200 : 300;
+      } else {
+        amount = (playersList.length || 1) * 150;
+      }
+    }
     const screenshotName = String(getVal("screenshotname", "utr number", "screenshot", "utr") || "Verified Image");
     const statusRaw = String(getVal("status") || "Confirmed");
     const status: "Confirmed" | "Pending" | "Rejected" =

@@ -310,7 +310,7 @@ export default function AdminDashboardPage() {
             </div>
             <div className="text-4xl font-black font-mono text-[#03120c]">{totalPlayersCount}</div>
             <div className="text-[11px] font-mono font-bold text-indigo-700 mt-2">
-              Rate: ₹150 / Athlete
+              Team: ₹150/athlete • Badm.: ₹200-₹300
             </div>
           </div>
 
