@@ -191,10 +191,15 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     let amount = Number(cleanedAmountStr);
 
     if (!rawAmount || isNaN(amount) || amount <= 0) {
-      const isBadminton = sportName.toLowerCase().includes("badminton");
-      if (isBadminton) {
-        const isSingles = sportName.toLowerCase().includes("singles") || playersList.length <= 1;
-        amount = isSingles ? 200 : 300;
+      const sportLower = sportName.toLowerCase();
+      if (sportLower.includes("badminton")) {
+        if (sportLower.includes("doubles")) {
+          amount = 300;
+        } else if (sportLower.includes("singles")) {
+          amount = 200;
+        } else {
+          amount = playersList.length > 1 ? 300 : 200;
+        }
       } else {
         amount = (playersList.length || 1) * 150;
       }
