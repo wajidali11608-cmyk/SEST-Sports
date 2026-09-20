@@ -205,15 +205,27 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
     }
 
-    const rawScreenshot = String(getVal("paymentscreenshot", "screenshotname", "screenshoturl", "screenshot", "utr") || "Verified Image").trim();
+    // First check for the dedicated Screenshot URL column (Google Drive URL from Apps Script)
+    const rawScreenshotUrl = String(getVal("screenshoturl", "screenshot url") || "").trim();
+    // Then check the Payment Screenshot / screenshotName column (may be just a filename)
+    const rawScreenshotName = String(getVal("paymentscreenshot", "screenshotname", "screenshot") || "").trim();
+    
     let screenshotName = "Payment Proof Attached";
     let screenshotUrl: string | undefined = undefined;
 
-    if (rawScreenshot.startsWith("data:image/") || rawScreenshot.startsWith("http://") || rawScreenshot.startsWith("https://")) {
-      screenshotUrl = rawScreenshot;
+    // Priority 1: Dedicated Screenshot URL column (Drive URL or hosted URL)
+    if (rawScreenshotUrl && (rawScreenshotUrl.startsWith("http://") || rawScreenshotUrl.startsWith("https://") || rawScreenshotUrl.startsWith("data:image/"))) {
+      screenshotUrl = rawScreenshotUrl;
+      screenshotName = rawScreenshotName || "Payment Screenshot";
+    }
+    // Priority 2: Payment Screenshot column might contain a URL
+    else if (rawScreenshotName && (rawScreenshotName.startsWith("http://") || rawScreenshotName.startsWith("https://") || rawScreenshotName.startsWith("data:image/"))) {
+      screenshotUrl = rawScreenshotName;
       screenshotName = "Payment Screenshot";
-    } else if (rawScreenshot && rawScreenshot !== "Verified Image") {
-      screenshotName = rawScreenshot;
+    }
+    // Priority 3: Just a filename
+    else if (rawScreenshotName && rawScreenshotName !== "Verified Image") {
+      screenshotName = rawScreenshotName;
     }
 
     const statusRaw = String(getVal("status") || "Confirmed").trim();
@@ -252,7 +264,24 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         if (Array.isArray(remoteData) && remoteData.length > 0) {
           const parsedRemoteRegs: Registration[] = remoteData.map((row: any, idx: number) => parseGoogleSheetRow(row, idx));
 
-          saveRegistrations(parsedRemoteRegs);
+          // Merge instead of replace — preserve local screenshot URLs and local-only registrations
+          saveRegistrations((prev) => {
+            const localScreenshots = new Map<string, string>();
+            prev.forEach((r) => {
+              if (r.screenshotUrl) localScreenshots.set(r.id, r.screenshotUrl);
+            });
+
+            const merged = parsedRemoteRegs.map((r) => ({
+              ...r,
+              screenshotUrl: r.screenshotUrl || localScreenshots.get(r.id),
+            }));
+
+            // Keep any local registrations that haven't synced to Sheets yet
+            const remoteIds = new Set(parsedRemoteRegs.map((r) => r.id));
+            const localOnly = prev.filter((r) => !remoteIds.has(r.id));
+
+            return [...localOnly, ...merged];
+          });
 
           setLastSyncedAt(new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true }));
         }
@@ -369,6 +398,7 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         players: finalPlayers,
         amount: finalAmount,
         screenshotName: finalScreenshotName,
+        screenshotUrl: finalScreenshotUrl || "",
         status: "Confirmed",
       };
 
