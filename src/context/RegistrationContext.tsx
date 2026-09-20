@@ -147,7 +147,7 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const captainEnrollment = String(getVal("captainenrollment", "captain enrollment", "enrollment") || "N/A").trim();
     const captainMobile = String(getVal("captainmobile", "captain mobile", "mobile") || "N/A").trim();
 
-    const rawPlayers = getVal("players", "players count", "players_count");
+    const rawPlayers = getVal("players", "players count", "players_count", "squad count", "squadcount");
     let playersList: Player[] = [];
 
     if (Array.isArray(rawPlayers)) {
@@ -186,7 +186,7 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
 
     // Clean currency string e.g. "₹300" or "₹200" or "300"
-    const rawAmount = getVal("amount", "amount paid", "amount_paid", "fee", "fees");
+    const rawAmount = getVal("total amount", "totalamount", "amount", "amount paid", "amount_paid", "fee", "fees");
     const cleanedAmountStr = String(rawAmount || "").replace(/[^0-9.]/g, "");
     let amount = Number(cleanedAmountStr);
 
