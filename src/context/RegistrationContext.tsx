@@ -264,24 +264,8 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         if (Array.isArray(remoteData) && remoteData.length > 0) {
           const parsedRemoteRegs: Registration[] = remoteData.map((row: any, idx: number) => parseGoogleSheetRow(row, idx));
 
-          // Merge instead of replace — preserve local screenshot URLs and local-only registrations
-          saveRegistrations((prev) => {
-            const localScreenshots = new Map<string, string>();
-            prev.forEach((r) => {
-              if (r.screenshotUrl) localScreenshots.set(r.id, r.screenshotUrl);
-            });
-
-            const merged = parsedRemoteRegs.map((r) => ({
-              ...r,
-              screenshotUrl: r.screenshotUrl || localScreenshots.get(r.id),
-            }));
-
-            // Keep any local registrations that haven't synced to Sheets yet
-            const remoteIds = new Set(parsedRemoteRegs.map((r) => r.id));
-            const localOnly = prev.filter((r) => !remoteIds.has(r.id));
-
-            return [...localOnly, ...merged];
-          });
+          // Use Google Sheets as the single source of truth for Admin Panel
+          saveRegistrations(parsedRemoteRegs);
 
           setLastSyncedAt(new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true }));
         }
