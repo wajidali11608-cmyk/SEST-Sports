@@ -208,7 +208,7 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     // First check for the dedicated Screenshot URL column (Google Drive URL from Apps Script)
     const rawScreenshotUrl = String(getVal("screenshoturl", "screenshot url") || "").trim();
     // Then check the Payment Screenshot / screenshotName column (may be just a filename)
-    const rawScreenshotName = String(getVal("paymentscreenshot", "screenshotname", "screenshot") || "").trim();
+    const rawScreenshotName = String(getVal("paymentproof", "payment proof", "paymentscreenshot", "screenshotname", "screenshot") || "").trim();
     
     let screenshotName = "Payment Proof Attached";
     let screenshotUrl: string | undefined = undefined;
