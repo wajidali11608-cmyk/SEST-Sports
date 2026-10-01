@@ -18,7 +18,7 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
     { name: "Home", href: "/" },
     { name: "Sports", href: "/#sports" },
     { name: "About", href: "/#about" },
-    { name: "Register Team", href: "/register" },
+    { name: "Registrations", href: "/register" },
   ];
 
   const isDarkNav = transparent || pathname === "/";
@@ -88,10 +88,10 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
 
             <Link
               href="/register"
-              className="px-6 py-3 text-[12px] font-black uppercase tracking-[0.15em] bg-emerald-500 hover:bg-emerald-400 text-[#03120c] transition-all shadow-[4px_4px_0px_0px_#ffffff] hover:translate-x-[-2px] hover:translate-y-[-2px]"
+              className="px-5 py-2.5 text-[12px] font-black uppercase tracking-[0.15em] bg-red-600 hover:bg-red-500 text-white transition-all border-2 border-white shadow-[4px_4px_0px_0px_#ffffff] hover:translate-x-[-2px] hover:translate-y-[-2px]"
               style={{ fontFamily: "'Space Grotesk', sans-serif" }}
             >
-              Register Now
+              Forms Closed
             </Link>
           </div>
 
@@ -132,9 +132,9 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
           <Link
             href="/register"
             onClick={() => setMobileMenuOpen(false)}
-            className="block text-center py-3.5 bg-emerald-500 text-[#03120c] font-black text-sm uppercase tracking-widest shadow-[4px_4px_0px_0px_#ffffff]"
+            className="block text-center py-3.5 bg-red-600 text-white font-black text-sm uppercase tracking-widest border-2 border-white shadow-[4px_4px_0px_0px_#ffffff]"
           >
-            Register Team Now
+            Forms Closed
           </Link>
         </div>
       )}

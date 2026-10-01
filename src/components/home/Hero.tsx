@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Calendar, MapPin, ArrowRight, Trophy, ShieldCheck } from "lucide-react";
+import { Lock, ArrowRight } from "lucide-react";
 import { SPORTS } from "@/data/mockData";
 import { useRegistration } from "@/context/RegistrationContext";
 
@@ -30,25 +30,27 @@ export const Hero: React.FC = () => {
       </div>
 
       {/* CONTINUOUS MARQUEE TICKER RIBBON */}
-      <div className="relative z-20 bg-emerald-500 text-[#0f172a] py-2 border-y-3 border-[#0f172a] font-mono font-black text-xs uppercase tracking-widest overflow-hidden shadow-md">
+      <div className="relative z-20 bg-red-600 text-white py-2 border-y-3 border-[#0f172a] font-mono font-black text-xs uppercase tracking-widest overflow-hidden shadow-md">
         <div className="whitespace-nowrap flex gap-8 animate-marquee">
           <span>SEST SPORTS WEEK 2026</span>
           <span>•</span>
+          <span>REGISTRATIONS ARE OFFICIALLY CLOSED</span>
+          <span>•</span>
+          <span>DEADLINE HAS PASSED</span>
+          <span>•</span>
           <span>DATES: 5 TO 7 OCTOBER 2026</span>
           <span>•</span>
-          <span>VENUE: SPORTS COMPLEX</span>
-          <span>•</span>
-          <span>REGISTRATION OPEN NOW FOR ALL SEST STUDENTS</span>
+          <span>MATCH SCHEDULES & FIXTURES COMING SOON</span>
           <span>•</span>
           <span>JAMIA HAMDARD NEW DELHI</span>
           <span>•</span>
           <span>SEST SPORTS WEEK 2026</span>
           <span>•</span>
+          <span>REGISTRATIONS ARE OFFICIALLY CLOSED</span>
+          <span>•</span>
+          <span>DEADLINE HAS PASSED</span>
+          <span>•</span>
           <span>DATES: 5 TO 7 OCTOBER 2026</span>
-          <span>•</span>
-          <span>VENUE: SPORTS COMPLEX</span>
-          <span>•</span>
-          <span>REGISTRATION OPEN NOW FOR ALL SEST STUDENTS</span>
           <span>•</span>
         </div>
       </div>
@@ -75,18 +77,18 @@ export const Hero: React.FC = () => {
 
           {/* Description */}
           <p className="animate-fade-in-up-delay-3 text-sm sm:text-lg text-emerald-100/90 max-w-2xl leading-relaxed mb-8 font-light">
-            The ultimate annual athletic spectacle of Jamia Hamdard. Assemble your department squad, challenge rival teams across 5 major disciplines, and compete for eternal campus glory.
+            The ultimate annual athletic spectacle of Jamia Hamdard. Registration entries for all 5 major disciplines are now officially closed as the deadline has passed.
           </p>
 
           {/* Action CTAs */}
           <div className="animate-fade-in-up-delay-4 flex flex-wrap items-center gap-4 text-[13px] font-mono font-bold">
             <Link
               href="/register"
-              className="px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-[#0f172a] font-black text-xs sm:text-sm uppercase tracking-widest border-2 border-white shadow-[6px_6px_0px_0px_#ffffff] hover:shadow-[8px_8px_0px_0px_#ffffff] transition-all flex items-center gap-2.5"
+              className="px-8 py-4 bg-red-600 hover:bg-red-500 text-white font-black text-xs sm:text-sm uppercase tracking-widest border-2 border-white shadow-[6px_6px_0px_0px_#ffffff] hover:shadow-[8px_8px_0px_0px_#ffffff] transition-all flex items-center gap-2.5"
               style={{ fontFamily: "'Space Grotesk', sans-serif" }}
             >
-              <span>Register Team Now</span>
-              <ArrowRight className="w-4 h-4 stroke-[3]" />
+              <Lock className="w-4 h-4" />
+              <span>Registrations Closed</span>
             </Link>
 
             <a
@@ -103,8 +105,8 @@ export const Hero: React.FC = () => {
       <div className="relative z-20 max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12 pb-16 w-full">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <span className="label-brutalist text-emerald-200 font-mono text-xs uppercase tracking-widest bg-emerald-950 px-3 py-1 border border-emerald-400">
-              Select Your Championship Discipline
+            <span className="label-brutalist text-red-200 font-mono text-xs uppercase tracking-widest bg-red-950 px-3 py-1 border border-red-400">
+              Championship Disciplines (Forms Closed)
             </span>
           </div>
         </div>
@@ -115,7 +117,7 @@ export const Hero: React.FC = () => {
               key={sport.id}
               href={`/register?sport=${sport.id}`}
               onClick={() => handleSelectSport(sport.id)}
-              className="group relative h-[250px] sm:h-[300px] overflow-hidden cursor-pointer flex flex-col justify-end border-3 border-white bg-white hover:border-emerald-400 transition-all shadow-lg hover:shadow-[6px_6px_0px_0px_#10b981] hover:translate-x-[-2px] hover:translate-y-[-2px]"
+              className="group relative h-[250px] sm:h-[300px] overflow-hidden cursor-pointer flex flex-col justify-end border-3 border-white bg-white hover:border-red-500 transition-all shadow-lg hover:shadow-[6px_6px_0px_0px_#dc2626] hover:translate-x-[-2px] hover:translate-y-[-2px]"
             >
               <Image
                 src={sport.image}
@@ -127,14 +129,14 @@ export const Hero: React.FC = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent group-hover:from-black/95 transition-all duration-500" />
 
               <div className="absolute top-2.5 right-2.5 z-10 flex items-center gap-1.5">
-                <span className="text-[10px] font-mono font-black uppercase bg-[#0f172a] text-white px-2 py-0.5 border border-emerald-400">
-                  {sport.type}
+                <span className="text-[10px] font-mono font-black uppercase bg-red-600 text-white px-2 py-0.5 border border-white">
+                  Closed
                 </span>
               </div>
 
               <div className="relative z-10 p-3.5 text-left">
                 <h3
-                  className="text-base sm:text-xl font-black text-white uppercase tracking-tight mb-1 group-hover:text-emerald-400 transition-colors"
+                  className="text-base sm:text-xl font-black text-white uppercase tracking-tight mb-1 group-hover:text-red-400 transition-colors"
                   style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                 >
                   {sport.name}
@@ -144,11 +146,11 @@ export const Hero: React.FC = () => {
                 </p>
 
                 <div className="flex items-center justify-between pt-2 border-t border-white/20">
-                  <span className="text-[10px] font-mono font-black text-emerald-400 uppercase tracking-widest">
-                    Register
+                  <span className="text-[10px] font-mono font-black text-red-400 uppercase tracking-widest">
+                    Closed
                   </span>
-                  <div className="w-6 h-6 sm:w-7 sm:h-7 bg-emerald-500 text-[#0f172a] font-black flex items-center justify-center group-hover:bg-white transition-colors border border-[#0f172a]">
-                    <ArrowRight className="w-3.5 h-3.5" />
+                  <div className="w-6 h-6 sm:w-7 sm:h-7 bg-red-600 text-white font-black flex items-center justify-center border border-white">
+                    <Lock className="w-3.5 h-3.5" />
                   </div>
                 </div>
               </div>
@@ -159,4 +161,3 @@ export const Hero: React.FC = () => {
     </section>
   );
 };
-

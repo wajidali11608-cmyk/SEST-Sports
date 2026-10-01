@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Hero } from "@/components/home/Hero";
-import { ArrowRight, MapPin, Trophy, Calendar } from "lucide-react";
+import { ArrowRight, MapPin, Trophy, Calendar, Lock } from "lucide-react";
 import { SPORTS } from "@/data/mockData";
 import { useRegistration } from "@/context/RegistrationContext";
 import { useRouter } from "next/navigation";
@@ -34,28 +34,28 @@ export default function Home() {
           <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
               <div>
-                <span className="text-[11px] font-mono font-black uppercase text-emerald-800 bg-emerald-100 px-3 py-1 border border-emerald-400 inline-block mb-2">
-                  Inter-Department Tournament
+                <span className="text-[11px] font-mono font-black uppercase text-red-800 bg-red-100 px-3 py-1 border border-red-400 inline-block mb-2">
+                  Inter-Department Tournament • Registration Closed
                 </span>
                 <h2
                   className="text-3xl sm:text-5xl font-black tracking-tight leading-[0.95] uppercase text-[#0f172a]"
                   style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                 >
-                  Select Your <span className="text-emerald-600">Discipline</span>
+                  Tournament <span className="text-red-600">Disciplines</span>
                 </h2>
               </div>
               <p className="text-xs sm:text-sm font-mono text-gray-600 max-w-xs font-medium">
-                Tap any sport card below to open the registration form directly.
+                The registration deadline has passed. Form submissions for all disciplines are now closed.
               </p>
             </div>
 
-            {/* Full Image Gradient Sports Grid — Old Best UI/UX with Overlap Fix */}
+            {/* Full Image Gradient Sports Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               {SPORTS.map((sport, i) => (
                 <div
                   key={sport.id}
                   onClick={() => handleSelectSportAndNavigate(sport.id)}
-                  className="group relative h-[300px] sm:h-[340px] lg:h-[360px] border-3 sm:border-4 border-[#0f172a] shadow-[6px_6px_0px_0px_#059669] hover:shadow-[10px_10px_0px_0px_#059669] hover:-translate-x-1 hover:-translate-y-1 active:scale-[0.98] cursor-pointer transition-all overflow-hidden flex flex-col justify-end bg-[#0f172a]"
+                  className="group relative h-[300px] sm:h-[340px] lg:h-[360px] border-3 sm:border-4 border-[#0f172a] shadow-[6px_6px_0px_0px_#dc2626] hover:shadow-[10px_10px_0px_0px_#dc2626] hover:-translate-x-1 hover:-translate-y-1 active:scale-[0.98] cursor-pointer transition-all overflow-hidden flex flex-col justify-end bg-[#0f172a]"
                 >
                   {/* Full Cover Image */}
                   <Image
@@ -69,17 +69,17 @@ export default function Home() {
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-[#0f172a]/75 to-transparent z-10" />
 
                   {/* Top Right Floating Badge */}
-                  <div className="absolute top-3 right-3 z-20 bg-[#0f172a] text-emerald-400 px-2.5 py-1 text-[11px] font-mono font-black uppercase border border-emerald-400 shadow-md flex items-center gap-1.5">
+                  <div className="absolute top-3 right-3 z-20 bg-red-600 text-white px-2.5 py-1 text-[11px] font-mono font-black uppercase border border-white shadow-md flex items-center gap-1.5">
                     <span>{String(i + 1).padStart(2, "0")}</span>
                     <span>•</span>
-                    <span>{sport.type}</span>
+                    <span>CLOSED</span>
                   </div>
 
-                  {/* Bottom Content Area (Separated flex flow with zero overlap guarantee) */}
+                  {/* Bottom Content Area */}
                   <div className="relative z-20 p-4 sm:p-5 flex flex-col justify-end">
                     {/* Sport Name */}
                     <h3
-                      className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white group-hover:text-emerald-400 transition-colors truncate"
+                      className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white group-hover:text-red-400 transition-colors truncate"
                       style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                     >
                       {sport.name}
@@ -92,11 +92,11 @@ export default function Home() {
 
                     {/* Divider & Action Bar */}
                     <div className="mt-3 pt-3 border-t border-white/20 flex items-center justify-between gap-3 shrink-0">
-                      <span className="text-xs font-mono font-black text-emerald-400 uppercase tracking-widest truncate">
-                        Register Discipline
+                      <span className="text-xs font-mono font-black text-red-400 uppercase tracking-widest truncate">
+                        Forms Closed
                       </span>
-                      <div className="w-8 h-8 sm:w-9 sm:h-9 bg-emerald-500 group-hover:bg-white text-[#0f172a] font-black flex items-center justify-center border-2 border-[#0f172a] shrink-0 transition-colors shadow">
-                        <ArrowRight className="w-4 h-4 stroke-[3]" />
+                      <div className="w-8 h-8 sm:w-9 sm:h-9 bg-red-600 text-white font-black flex items-center justify-center border-2 border-[#0f172a] shrink-0 transition-colors shadow">
+                        <Lock className="w-4 h-4" />
                       </div>
                     </div>
                   </div>
